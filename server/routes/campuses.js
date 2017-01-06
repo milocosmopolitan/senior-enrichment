@@ -2,8 +2,19 @@
 const api = require('express').Router()
 const Campus = require('../../db/models').Campus;
 
-api.get('/', (req, res, next)=>{
 
+api.param('campusId', function (req, res, next, id) {
+  Campus.findById(id)
+  .then(function (campus) {
+    if (!campus) throw Error(404);
+    req.campus = campus;
+    next();
+  })
+  .catch(next);
+});
+
+
+api.get('/', (req, res, next)=>{
 	Campus.findAll()
 		.then(allCapuses=>{
 			res.json(allCapuses)
@@ -12,12 +23,12 @@ api.get('/', (req, res, next)=>{
 })
 
 api.get('/:campusId', (req, res, next)=>{
-
-	Campus.findById(req.params.campusId)
-		.then(campus=>{
-			res.json(campus)
-		})
-		.catch(next)
+	res.json(req.campus)
+	// Campus.findById(req.params.campusId)
+	// 	.then(campus=>{
+	// 		res.json(campus)
+	// 	})
+	// 	.catch(next)
 })
 
 api.post('/', (req, res, next)=>{
@@ -28,27 +39,25 @@ api.post('/', (req, res, next)=>{
 		})
 })
 
+
+
+
 api.put('/:campusId', (req, res, next)=>{
-	Campus.update(req.body,{
-		where:{
-			id: req.params.campusId
-		},
-		returning: true
-	})
-	.then(data=>data[1])
-	.then(updatedCampus=>{
-		res.json(updatedCampus)
-	})
-	.catch(next)
+	req.campus.update(req.body)
+	  .then(function (campus) {
+	    return campus.reload();
+	  })
+	  .then(function (campus) {
+	    res.json(campus);
+	  })
+	  .catch(next);
 })
 
 api.delete('/:campusId', (req, res, next)=>{
-	Campus.destroy({
-		where: {
-			id: req.params.campusId
-		}
-	}).then(deleted=>{
-		console.log(deleted)
-	})
+	req.campus.destroy()
+		.then(function () {
+	    res.status(204).end();
+	  })
+	  .catch(next);
 })
 module.exports = api

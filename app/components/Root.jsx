@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import FlatButton from 'material-ui/FlatButton';
 import {Link, browserHistory} from 'react-router';
 
@@ -56,7 +55,7 @@ class Root extends Component {
         <AppBar
           title={<span style={styles.title}>Margaret Hamilton Interplanetary Academy of JavaScript</span>}
           onTitleTouchTap={handleTouchTap}
-          iconElementLeft={<IconButton><NavigationClose /></IconButton>}
+          showMenuIconButton={false}
           iconElementRight={<div id="nav_btn"><FlatButton onClick={goToCampusList} label="Campus" /><FlatButton onClick={goToStudentList} label="Student" /></div>}
         />
         {
